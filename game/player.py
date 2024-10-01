@@ -13,6 +13,8 @@ class Player:
         strategy: The strategy of the player.
         buffs: A dictionary keeping track of the player's buffs.
         crit: Critical hit.
+        healing_factor: The healing factor of the player.
+        crit_factor: The critical hit chance of the player.
     """
 
     def __init__(self, hp: int, attack: int, magic: int, defence: int, strategy = None) -> None:
@@ -31,8 +33,10 @@ class Player:
         self.defence = 1 + defence
         self.current_action = None
         self.strategy = strategy
-        self.buffs = {'physical': 1, 'defence': 1, 'magic': 1}  
-        self.crit = 1      
+        self.buffs = {'physical': 1, 'magic_defence': 1, 'magic': 1, 'physical_defence': 1}  
+        self.crit_factor = 1
+        self.healing_factor = 1
+        self.crit = 1
     
     def _physical_attack(self) -> float:
         """Calculate the attack of a physical attack.
@@ -46,46 +50,60 @@ class Player:
 
         return self.buffs['magic'] * self.magic * self.crit
 
-    def _heal(self, healing_factor: float) -> float:
+    def _heal(self) -> float:
         """Calculate the healing.
 
         Attributes:
             healing_factor: The healing factor for the self heal.
         """
 
-        return self.buffs['magic'] * (healing_factor / self.hp) * 100 * self.crit
+        return self.buffs['magic'] * (self.healing_factor / self.hp) * 100 * self.crit
     
-    def _crit(self, crit_factor: float = 1) -> int:
+    def _crit(self) -> int:
         """Checks to see if there is a critical hit during this turn.
 
         Attributes:
             crit_factor: The critical factor for calculating if this turn is a critical hit.
         """
 
-        crit_chance = crit_factor * 0.05
+        crit_chance = self.crit_factor * 0.05
         crit_no = random.uniform(0, 1) 
 
         if crit_no > crit_chance:
-            self.crit = 2
-        
+            self.crit = 2 
 
     def calculate_damage(self, attributes: json) -> float:
         """Take in a bunch of attributes and calculate the damage. 
 
         Pre-Condition: Attributes JSON:
             {
-                "attack_type": "Magic" or "Physical" or "Shield", 
-                "attack_used": "Physical" or "Heal" or "Defence Up", "Attack Up", "Shield", "Magic"
-                "critical": "Yes" or "No
-             }
+                "attack_type": "Magic" or "Physical",
+                "attack_used": "Attack", "Fireball" or "Defence Up" or "Attack Up"
+            }
         
         Attributes:
             attributes: A JSON file which contains the attributes of the attack.
         """
 
-        crit = random.uniform(0, 1)
+        attack_type = attributes['attack_type']
+        attack_used = attributes['attack_used']
+        self._crit()
 
-        
+        if attack_used == "Physical":
+            return self._physical_attack()
+        elif attack_used == "Fireball":
+            return self._magic_attack()
+        elif attack_used == "Defence Up":
+            if attack_type == 'Physical':
+                self.buffs["physical_defence"] += 1
+            elif attack_type == "Magic":
+                self.buffs['magic_defence'] += 1
+        elif attack_used == "Attack Up":
+            if attack_type == "Physical":
+                self.buffs['physical'] += 1
+            elif attack_type == "Magic":
+                self.buffs['magic'] += 1        
+
     def show_hp(self) -> float:
         """Return self.hp. """
 
