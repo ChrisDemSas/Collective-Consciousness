@@ -27,7 +27,7 @@ class Player:
             strategy: The strategy of the player, either 'Random' for Random Choices, 'RL' for Reinforcement Learning or None (For Player).
         """
 
-        self.hp = 1 + hp
+        self.hp = 100 + hp
         self.attack = 1 + attack
         self.magic = 1 + magic
         self.defence = 1 + defence
@@ -57,7 +57,7 @@ class Player:
             healing_factor: The healing factor for the self heal.
         """
 
-        return self.buffs['magic'] * (self.healing_factor / self.hp) * 100 * self.crit
+        return self.buffs['magic'] * (self.healing_factor / self.hp) * 100
     
     def _crit(self) -> int:
         """Checks to see if there is a critical hit during this turn.
@@ -72,8 +72,8 @@ class Player:
         if crit_no > crit_chance:
             self.crit = 2 
 
-    def calculate_damage(self, attributes: json) -> float:
-        """Take in a bunch of attributes and calculate the damage. 
+    def turn(self, attributes: json) -> float:
+        """Take in a bunch of attributes and update parameters. 
 
         Pre-Condition: Attributes JSON:
             {
@@ -102,19 +102,42 @@ class Player:
             if attack_type == "Physical":
                 self.buffs['physical'] += 1
             elif attack_type == "Magic":
-                self.buffs['magic'] += 1        
+                self.buffs['magic'] += 1
+        
+        self.reset_crit()
+
+    def take_damage(self, damage_taken: float) -> None:
+        """Take in a damage number and reduce self.hp.
+        
+        Attributes:
+            damage_taken: The total number of damage taken.
+        """
+
+        self.hp -= damage_taken
 
     def show_hp(self) -> float:
-        """Return self.hp. """
+        """Return self.hp. 
+        """
 
         return self.hp
     
     def show_buffs(self) -> dict:
-        """Return self.buffs."""
+        """Return self.buffs.
+        """
 
         return self.buffs
     
     def reset_crit(self) -> None:
-        """Reset the crit chance."""
+        """Reset the crit chance.
+        """
 
         self.crit = 1
+    
+    def check_game_over(self) -> str:
+        """Checks to see if self.hp <= 0. If it is, return "Game Over".
+        """
+
+        if self.hp <= 0:
+            return "Game Over"
+        else:
+            return "Continue"
