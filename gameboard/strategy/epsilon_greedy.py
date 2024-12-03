@@ -1,5 +1,7 @@
 from random import uniform, randint
 from strategy import Strategy
+import torch
+from torch import Tensor
 
 class EpsilonGreedy(Strategy):
     """
@@ -28,8 +30,9 @@ class EpsilonGreedy(Strategy):
 
         probability = uniform(0, 1)
 
-        if probability < (1 - self.epsilon):
-            random_data = randint(0, 1)
+        if probability < self.epsilon:
+            action = randint(0, 1)
         else:
-            
-
+            action = int(torch.argmax(self.value))
+        
+        return action

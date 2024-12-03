@@ -1,3 +1,6 @@
+import torch
+from torch import Tensor
+
 class Strategy:
     """
     Initialize the Strategy class.
@@ -8,7 +11,7 @@ class Strategy:
         Initialize the Strategy Class.
         """
 
-        self.value = 0
+        self.value = torch.Tensor([0, 0])
         self.states = {0: "Defect", 1: "Cooperate"}
         self.decision = None
 
