@@ -26,5 +26,4 @@ class Random(Strategy):
         """
 
         random = randint(0, self.no_states)
-
-        return random
+        self.decision = random

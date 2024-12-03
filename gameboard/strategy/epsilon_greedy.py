@@ -31,8 +31,6 @@ class EpsilonGreedy(Strategy):
         probability = uniform(0, 1)
 
         if probability < self.epsilon:
-            action = randint(0, 1)
+            self.decision = randint(0, 1)
         else:
-            action = int(torch.argmax(self.value))
-        
-        return action
+            self.decision = int(torch.argmax(self.value))
