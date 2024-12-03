@@ -4,10 +4,11 @@ class Strategy:
     """
 
     def __init__(self) -> None:
-        """Initialize the Strategy Class.
+        """
+        Initialize the Strategy Class.
         """
 
-        self.rewards = 0
+        self.value = 0
         self.states = {0: "Defect", 1: "Cooperate"}
         self.decision = None
 
